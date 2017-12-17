@@ -59,7 +59,49 @@ another option, but you will soon see that it stops to make sense with this appr
 
 ## Usage
 
-TODO: Write usage instructions here
+When you start working on a new API version, you should define a new version in the repository:
+
+```ruby
+module API
+  class MigrationRepository < Pragma::Migration::Repository
+    version '2017-12-17'
+    
+    # We will give this a date very far into the future for now, since we don't know the release
+    # date yet. 
+    version '2100-01-01', [
+      # Add migrations here...
+    ]
+  end
+end
+```
+
+Suppose you are working on a new API version and you decide to start using seconds since the epoch 
+instead of timestamps. In order to support users who are on an older version of the API, you will
+need to do the following:
+
+- convert their input timestamps into UNIX epochs before passing them to your code;
+- convert your UNIX epochs to timestamps before sending the HTTP response.
+
+To accomplish it, you might write a new migration like this:
+
+```ruby
+module API
+  module Migration
+    class ChangeTimestampsToUnixEpochs < Pragma::Migration::Base
+      # Here you can specify a namespace or a specific operation.
+      apply_to API::Article::Operation
+      
+      def up(request)
+        request.merge('created_at' => Time.parse(request['created_at']).to_i)
+      end
+      
+      def down(response)
+        response.merge('created_at' => Time.at(response['created_at']).iso8601)
+      end
+    end
+  end
+end
+```
 
 ## Development
 
