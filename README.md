@@ -48,7 +48,7 @@ module API
   class MigrationRepository < Pragma::Migration::Repository
     # The initial version of your empty isn't allowed to have migrations, because there is nothing
     # to migrate from.
-    version '1.0.0'
+    version '2017-12-17'
   end
 end
 ```
