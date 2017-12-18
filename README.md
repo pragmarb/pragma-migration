@@ -137,21 +137,29 @@ API property is not breaking anymore!).
 
 ## FAQs
 
-**Why is this so low-level?**
+**Why are the migrations so low-level?**
 
-...
-
-**Are you out of your mind?**
-
-...
+Admittedly, the code for migrations is very low-level: you are interacting with requests and 
+responses directly, rather than using contracts and decorators. Unfortunately, so far we have been 
+unable to come up with an abstraction that will not blow up at the first edge case. We are still 
+experimenting here - ideas are welcome! 
 
 **What are the drawbacks of API migrations?**
 
-...
+If you are used to ActiveRecord migrations, then you might be tempted to use this very freely.
+However, API migrations are very different from DB migrations: DB migrations are run once and then
+forgotten forever, API migrations are executed on _every request_ as long as clients are running on
+an outdated version of your API. This means that API migrations should be considered an active,
+evolving part of your codebase that you will have to maintain over time. Don't use them lightly, for
+as cool as they are.
 
 **What is the impact on performance?**
 
-...
+No idea yet, but if others do it, we should be able to do it too. Stay tuned!
+
+**Are you out of your mind?**
+
+Possibly, [but we're not the only ones](https://stripe.com/blog/api-versioning).
 
 ## Development
 
