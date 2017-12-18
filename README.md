@@ -185,3 +185,4 @@ The gem is available as open source under the terms of the [MIT License](http://
 - [ ] Migration descriptions (to generate docs etc.)
 - [ ] Proof of Concept
 - [ ] Abstraction to deal with decorators/contracts directly
+- [ ] Details on different versioning schemes (release dates, semver)
