@@ -2,7 +2,7 @@
 
 This is an experiment at implementing [Stripe-style API versioning](https://stripe.com/blog/api-versioning).
 
-There's nothing here yet except for desired final code examples.
+There's nothing here yet except for code samples of the desired outcome.
 
 ## Installation
 
