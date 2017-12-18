@@ -183,3 +183,5 @@ The gem is available as open source under the terms of the [MIT License](http://
 
 - [ ] Side effects flag (`has_side_effects` in migration)
 - [ ] Migration descriptions (to generate docs etc.)
+- [ ] Proof of Concept
+- [ ] Abstraction to deal with decorators/contracts directly
