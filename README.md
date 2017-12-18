@@ -150,8 +150,7 @@ If you are used to ActiveRecord migrations, then you might be tempted to use thi
 However, API migrations are very different from DB migrations: DB migrations are run once and then
 forgotten forever, API migrations are executed on _every request_ as long as clients are running on
 an outdated version of your API. This means that API migrations should be considered an active,
-evolving part of your codebase that you will have to maintain over time. Don't use them lightly, for
-as cool as they are.
+evolving part of your codebase that you will have to maintain over time.
 
 **What is the impact on performance?**
 
