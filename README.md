@@ -91,6 +91,10 @@ module API
       # Here you can specify a namespace or a specific operation.
       apply_to API::Article::Operation
       
+      # Optionally, you can write a description for the migration, which you can use for
+      # documentation and changelogs.
+      description 'Timestamps have been replaced with seconds since the epoch in the Articles API.' 
+      
       # The `up` method is called when a client on an old version makes a request, and should
       # convert the request into a format that can be consumed by the operation.
       def up(request)
@@ -134,6 +138,28 @@ As you might imagine, Semantic Versioning doesn't make much sense when you adopt
 because there are no breaking changes anymore. In some occasions, you might still want to adopt
 Semantic Versioning and just change the concept of what a breaking change is (e.g. renaming an
 API property is not breaking anymore!).
+
+### API
+
+There are a few methods the migration repository exposes for your convenience.
+
+You can retrieve all the changes since a specific version: 
+
+```ruby
+API::MigrationRepository.changes_since('2017-12-17') 
+# => [
+# =>   API::Migration::ChangeTimestampsToUnixEpochs,
+# => ]
+```
+
+You can check if a specific migration is active (i.e. if it will be applied):
+
+```ruby
+API::MigrationRepository.active?(
+  API::Migration::ChangeTimestampsToUnixEpochs, 
+  '2017-12-17'
+) # => true
+```
 
 ## FAQs
 
@@ -181,8 +207,5 @@ The gem is available as open source under the terms of the [MIT License](http://
 
 ## Todos
 
-- [ ] Side effects flag (`has_side_effects` in migration)
-- [ ] Migration descriptions (to generate docs etc.)
 - [ ] Proof of Concept
 - [ ] Abstraction to deal with decorators/contracts directly
-- [ ] Details on different versioning schemes (release dates, semver)
