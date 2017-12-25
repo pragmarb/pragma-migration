@@ -139,7 +139,7 @@ because there are no breaking changes anymore. In some occasions, you might stil
 Semantic Versioning and just change the concept of what a breaking change is (e.g. renaming an
 API property is not breaking anymore!).
 
-### API
+### Repository API
 
 There are a few methods the migration repository exposes for your convenience.
 
