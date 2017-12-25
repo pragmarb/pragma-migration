@@ -146,7 +146,7 @@ There are a few methods the migration repository exposes for your convenience.
 You can retrieve all the changes since a specific version: 
 
 ```ruby
-API::MigrationRepository.changes_since('2017-12-17') 
+API::MigrationRepository.migrations_since('2017-12-17') 
 # => [
 # =>   API::Migration::ChangeTimestampsToUnixEpochs,
 # => ]
@@ -155,7 +155,7 @@ API::MigrationRepository.changes_since('2017-12-17')
 You can check if a specific migration is active (i.e. if it will be applied):
 
 ```ruby
-API::MigrationRepository.active?(
+API::MigrationRepository.migration_active?(
   API::Migration::ChangeTimestampsToUnixEpochs, 
   '2017-12-17'
 ) # => true
