@@ -1,4 +1,6 @@
-require "pragma/migration/version"
+# frozen_string_literal: true
+
+require 'pragma/migration/version'
 
 module Pragma
   module Migration
