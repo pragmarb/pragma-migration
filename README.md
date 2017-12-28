@@ -143,27 +143,10 @@ because there are no breaking changes anymore. In some occasions, you might stil
 Semantic Versioning and just change the concept of what a breaking change is (e.g. renaming an
 API property is not breaking anymore!).
 
-### Repository API
+### Side-effects
 
-There are a few methods the migration repository exposes for your convenience.
-
-You can retrieve all the changes since a specific version: 
-
-```ruby
-API::MigrationRepository.migrations_since('2017-12-17') 
-# => [
-# =>   API::Migration::ChangeTimestampsToUnixEpochs,
-# => ]
-```
-
-You can check if a specific migration is active (i.e. if it will be applied):
-
-```ruby
-API::MigrationRepository.migration_active?(
-  API::Migration::ChangeTimestampsToUnixEpochs, 
-  '2017-12-17'
-) # => true
-```
+TODO: Document how to use migrations (empty or not) to signal side effects that leak outside of the
+migration itself.
 
 ## FAQs
 
