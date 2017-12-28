@@ -1,6 +1,9 @@
 require "bundler/setup"
 require "pragma/migration"
 
+require 'coveralls'
+Coveralls.wear!
+
 require 'pry'
 
 RSpec.configure do |config|
