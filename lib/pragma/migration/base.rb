@@ -15,12 +15,12 @@ module Pragma
         end
       end
 
-      def up(_request)
-        fail NotImplementedError
+      def up(request)
+        request
       end
 
-      def down(_response)
-        fail NotImplementedError
+      def down(response)
+        response
       end
     end
   end
