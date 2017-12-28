@@ -5,7 +5,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/pragmarb/pragma-migration/badge.svg?branch=master)](https://coveralls.io/github/pragmarb/pragma-migration?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e51e8d7489eb72ab97ba/maintainability)](https://codeclimate.com/github/pragmarb/pragma-migration/maintainability)
 
-This is an experiment at implementing [Stripe-style API versioning](https://stripe.com/blog/api-versioning).
+Pragma::Migration is an experiment at implementing [Stripe-style API versioning](https://stripe.com/blog/api-versioning).
+
+**This gem is highly experimental and still under active development. Usage in a production environment is strongly discouraged.**
 
 ## Installation
 
@@ -91,12 +93,11 @@ To accomplish it, you might write a new migration like this:
 module API
   module Migration
     class ChangeTimestampsToUnixEpochs < Pragma::Migration::Base
-      # Here you can specify a namespace or a specific operation.
-      apply_to API::Article::Operation
+      apply_to '/articles/**/*'
       
       # Optionally, you can write a description for the migration, which you can use for
       # documentation and changelogs.
-      description 'Timestamps have been replaced with seconds since the epoch in the Articles API.' 
+      describe 'Timestamps have been replaced with seconds since the epoch in the Articles API.' 
       
       # The `up` method is called when a client on an old version makes a request, and should
       # convert the request into a format that can be consumed by the operation.
