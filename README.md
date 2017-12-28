@@ -2,8 +2,6 @@
 
 This is an experiment at implementing [Stripe-style API versioning](https://stripe.com/blog/api-versioning).
 
-There's nothing here yet except for code samples of the desired outcome.
-
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -207,5 +205,6 @@ The gem is available as open source under the terms of the [MIT License](http://
 
 ## Todos
 
-- [ ] Proof of Concept
+- [ ] Rack middleware
+- [ ] Route and class-based pattern matching (`#apply_to`)
 - [ ] Abstraction to deal with decorators/contracts directly
