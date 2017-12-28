@@ -143,7 +143,7 @@ because there are no breaking changes anymore. In some occasions, you might stil
 Semantic Versioning and just change the concept of what a breaking change is (e.g. renaming an
 API property is not breaking anymore!).
 
-### Side-effects
+### Side Effects
 
 TODO: Document how to use migrations (empty or not) to signal side effects that leak outside of the
 migration itself.
