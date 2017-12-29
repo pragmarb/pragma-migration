@@ -192,5 +192,6 @@ The gem is available as open source under the terms of the [MIT License](http://
 ## Todos
 
 - [ ] Prevent initial version from having migrations
+- [ ] Test Rack middleware
 - [ ] Class-based pattern matching (`#apply_to`)
 - [ ] Abstraction to deal with decorators/contracts directly
