@@ -194,6 +194,5 @@ The gem is available as open source under the terms of the [MIT License](http://
 
 ## Todos
 
-- [ ] Rack middleware
-- [ ] Route and class-based pattern matching (`#apply_to`)
+- [ ] Class-based pattern matching (`#apply_to`)
 - [ ] Abstraction to deal with decorators/contracts directly
