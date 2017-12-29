@@ -6,6 +6,22 @@ module Pragma
       class << self
         attr_reader :pattern, :description
 
+        def applies_to?(request)
+          request.path =~ Mustermann.new(pattern)
+        end
+
+        def up(request)
+          result = new(request: request).up
+          result.is_a?(Rack::Request) ? result : request
+        end
+
+        def down(request, response)
+          result = new(request: request, response: response).down
+          result.is_a?(Rack::Response) ? result : response
+        end
+
+        protected
+
         def apply_to(pattern)
           @pattern = pattern
         end
@@ -15,13 +31,21 @@ module Pragma
         end
       end
 
-      def up(request)
-        request
+      attr_reader :request
+
+      def initialize(request:, response: nil)
+        @request = request
+        @response = response
       end
 
-      def down(response)
-        response
+      def response
+        fail 'Cannot access response when migrating upwards!' unless @response
+        @response
       end
+
+      def up; end
+
+      def down; end
     end
   end
 end

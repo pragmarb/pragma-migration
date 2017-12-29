@@ -1,37 +1,67 @@
 # frozen_string_literal: true
 
 RSpec.describe Pragma::Migration::Runner do
-  subject { described_class.new(repository: repository, user_version: user_version) }
+  subject { described_class.new(repository) }
 
   let(:repository) do
     Class.new(Pragma::Migration::Repository) do
       remove_author_name = Class.new(Pragma::Migration::Base) do
-        def up(request)
-          request.delete(:author_name)
+        apply_to '/api/v1/articles/:id'
+
+        def up
+          request.tap { |r| r.params.delete('author_name') }
         end
 
-        def down(response)
-          response.merge(author_name: 'John')
+        def down
+          parsed_body = JSON.parse(response.body)
+
+          Rack::Response.new(
+            JSON.dump(parsed_body.merge('author_name' => 'John')),
+            response.status,
+            response.headers
+          )
         end
       end
 
       rename_author_to_author_id = Class.new(Pragma::Migration::Base) do
-        def up(request)
-          request.merge(author: request.delete(:author_id))
+        apply_to '/api/v1/articles/:id'
+
+        def up
+          request.tap { |r| r.params['author'] = r.params.delete('author_id') }
         end
 
-        def down(response)
-          response.merge(author_id: response.delete(:author))
+        def down
+          parsed_body = JSON.parse(response.body.first)
+
+          Rack::Response.new(
+            JSON.dump(parsed_body.merge(
+              'author_id' => parsed_body.delete('author')
+            )),
+            response.status,
+            response.headers
+          )
         end
       end
 
       convert_published_at_into_unix_epoch = Class.new(Pragma::Migration::Base) do
-        def up(request)
-          request.merge(published_at: Time.new(request[:published_at]).to_i)
+        apply_to '/api/v1/articles/:id'
+
+        def up
+          request.tap do |r|
+            r.params['published_at'] = Time.new(request.params['published_at']).to_i
+          end
         end
 
-        def down(response)
-          response.merge(published_at: Time.at(response[:published_at]).to_s)
+        def down
+          parsed_body = JSON.parse(response.body.first)
+
+          Rack::Response.new(
+            JSON.dump(parsed_body.merge(
+              'published_at' => Time.at(parsed_body['published_at']).to_s
+            )),
+            response.status,
+            response.headers
+          )
         end
       end
 
@@ -58,16 +88,24 @@ RSpec.describe Pragma::Migration::Runner do
     let(:time) { Time.new('2014-11-06T10:40:54+11:00') }
 
     let(:request) do
-      {
-        author_id: 'test_id',
-        published_at: time.to_s
-      }
+      Rack::Request.new(
+        'PATH_INFO' => '/api/v1/articles/1',
+        'rack.input' => '',
+        'X-Api-Version' => '2017-12-25'
+      ).tap do |r|
+        {
+          'author_id' => 'test_id',
+          'published_at' => time.to_s
+        }.each_pair do |key, value|
+          r.update_param key, value
+        end
+      end
     end
 
     it 'applies the migrations to the request' do
-      expect(subject.run_upwards(request)).to eq(
-        author: 'test_id',
-        published_at: time.to_i
+      expect(subject.run_upwards(request).params).to eq(
+        'author' => 'test_id',
+        'published_at' => time.to_i
       )
     end
   end
@@ -75,17 +113,32 @@ RSpec.describe Pragma::Migration::Runner do
   describe '#run_downwards' do
     let(:time) { Time.new('2014-11-06T10:40:54+11:00') }
 
+    let(:request) do
+      Rack::Request.new(
+        'PATH_INFO' => '/api/v1/articles/1',
+        'rack.input' => '',
+        'X-Api-Version' => '2017-12-25'
+      ).tap do |r|
+        {
+          'author_id' => 'test_id',
+          'published_at' => time.to_s
+        }.each_pair do |key, value|
+          r.update_param key, value
+        end
+      end
+    end
+
     let(:response) do
-      {
+      Rack::Response.new(JSON.dump(
         author: 'test_id',
         published_at: time.to_i
-      }
+      ))
     end
 
     it 'applies the migrations to the response' do
-      expect(subject.run_downwards(response)).to eq(
-        published_at: time.to_s,
-        author_id: 'test_id'
+      expect(JSON.parse(subject.run_downwards(request, response).body.first)).to eq(
+        'published_at' => time.to_s,
+        'author_id' => 'test_id'
       )
     end
   end

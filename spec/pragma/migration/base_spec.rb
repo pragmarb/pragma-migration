@@ -2,22 +2,35 @@
 
 RSpec.describe Pragma::Migration::Base do
   subject(:migration_klass) do
-    Class.new(described_class)
+    Class.new(described_class) do
+      apply_to '/api/v1/articles/*'
+      describe 'Test migration'
+    end
   end
 
   describe '.apply_to' do
-    before { subject.apply_to('test_pattern') }
-
     it 'sets the pattern' do
-      expect(migration_klass.pattern).to eq('test_pattern')
+      expect(migration_klass.pattern).to eq('/api/v1/articles/*')
     end
   end
 
   describe '.describe' do
-    before { subject.describe('test_description') }
-
     it 'sets the description' do
-      expect(migration_klass.description).to eq('test_description')
+      expect(migration_klass.description).to eq('Test migration')
+    end
+  end
+
+  describe '.applies_to?' do
+    it 'returns true when the pattern applies to a path' do
+      expect(migration_klass).to be_applies_to(
+        Rack::Request.new('PATH_INFO' => '/api/v1/articles/1')
+      )
+    end
+
+    it 'returns false when the pattern does not apply to a path' do
+      expect(migration_klass).not_to be_applies_to(
+        Rack::Request.new('PATH_INFO' => '/api/v1/posts/1')
+      )
     end
   end
 end
