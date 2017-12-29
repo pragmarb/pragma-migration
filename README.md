@@ -25,32 +25,29 @@ Or install it yourself as:
 
     $ gem install pragma-migration
 
-Next, we're going to inform Pragma of the API version requested by a client:
+Next, we're going to create a migration repository for our API and tell it how it can retrieve the
+user's API version:
 
 ```ruby
 module API
-  module V1
-    class ResourceController < ApplicationController
-      include Pragma::Rails::ResourceController
-
-      private
-
-      def current_version
-        # Latest version is assumed if this returns nil.
-        request.headers['Api-Version'] || current_user&.version
-      end
+  class MigrationRepository < Pragma::Migration::Repository
+    determine_version_with do |request|
+      # `request` here is a `Rack::Request` object. Below is the default implementation.
+      request.get_header 'X-Api-Version'
     end
   end
 end
 ```
 
-Finally, we'll create a migration repository for our API. This _must_ be placed at the root level
-of your API (e.g. `API`). This is basically a list of your API versions and the migrations 
-introduced for each. For now, we'll just define our initial version.
+Finally, we will add an initial version to our repository:
 
 ```ruby
 module API
   class MigrationRepository < Pragma::Migration::Repository
+    determine_version_with do |request|
+      request.get_header 'X-Api-Version'
+    end
+
     # The initial version of your empty isn't allowed to have migrations, because there is nothing
     # to migrate from.
     version '2017-12-17'
@@ -194,5 +191,6 @@ The gem is available as open source under the terms of the [MIT License](http://
 
 ## Todos
 
+- [ ] Prevent initial version from having migrations
 - [ ] Class-based pattern matching (`#apply_to`)
 - [ ] Abstraction to deal with decorators/contracts directly

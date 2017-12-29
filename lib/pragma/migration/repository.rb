@@ -54,7 +54,7 @@ module Pragma
           sort_versions
         end
 
-        def user_version(&block)
+        def determine_version_with(&block)
           @user_version_proc = block
         end
 
