@@ -25,30 +25,18 @@ Or install it yourself as:
 
     $ gem install pragma-migration
 
-Next, we're going to create a migration repository for our API and tell it how it can retrieve the
-user's API version:
+Next, we're going to create a migration repository for our API:
 
 ```ruby
 module API
   class MigrationRepository < Pragma::Migration::Repository
+    # This tells the repository how to determine the current user's API version.
     determine_version_with do |request|
       # `request` here is a `Rack::Request` object. Below is the default implementation.
       request.get_header 'X-Api-Version'
     end
-  end
-end
-```
 
-Finally, we will add an initial version to our repository:
-
-```ruby
-module API
-  class MigrationRepository < Pragma::Migration::Repository
-    determine_version_with do |request|
-      request.get_header 'X-Api-Version'
-    end
-
-    # The initial version of your empty isn't allowed to have migrations, because there is nothing
+    # The initial version isn't allowed to have migrations, because there is nothing
     # to migrate from.
     version '2017-12-17'
   end
@@ -58,6 +46,18 @@ end
 Note that there's no restriction on the format of version numbers - just make sure they can be 
 sorted alphabetically. We recommend release dates. [Semantic Versioning](https://semver.org/) is 
 another option, but you will soon see that it stops to make sense with this approach to versioning. 
+
+Finally, we will mount the migration Rack middleware. In a Rails environment, this means adding the
+following to `config/application.rb`:
+
+```ruby
+module YourApp
+  class Application < Rails::Application
+    config.middleware.insert_before 0, Pragma::Migration::Middleware,
+      repository: API::MigrationRepository
+  end
+end
+```
 
 ## Usage
 
@@ -90,7 +90,8 @@ To accomplish it, you might write a new migration like this:
 module API
   module Migration
     class ChangeTimestampsToUnixEpochs < Pragma::Migration::Base
-      apply_to '/articles/**/*'
+      # You can use any pattern supported by Mustermann here.
+      apply_to '/articles/*'
       
       # Optionally, you can write a description for the migration, which you can use for
       # documentation and changelogs.
@@ -98,13 +99,13 @@ module API
       
       # The `up` method is called when a client on an old version makes a request, and should
       # convert the request into a format that can be consumed by the operation.
-      def up(request)
+      def up
         request.merge('created_at' => Time.parse(request['created_at']).to_i)
       end
       
       # The `down` method is called when a response is sent to a client on an old version, and
       # convert the response into a format that can be consumed by the client.
-      def down(response)
+      def down
         response.merge('created_at' => Time.at(response['created_at']).iso8601)
       end
     end
@@ -117,8 +118,12 @@ Now, you will just add your migration to the repository:
 ```ruby
 module API
   class MigrationRepository < Pragma::Migration::Repository
+    determine_version_with do |request|
+      request.get_header 'X-Api-Version'
+    end
+
     version '2017-12-17'
-    
+
     version '2100-01-01', [
       API::Migration::ChangeTimestampsToUnixEpochs,
     ]
@@ -192,6 +197,5 @@ The gem is available as open source under the terms of the [MIT License](http://
 ## Todos
 
 - [ ] Prevent initial version from having migrations
-- [ ] Test Rack middleware
 - [ ] Class-based pattern matching (`#apply_to`)
 - [ ] Abstraction to deal with decorators/contracts directly
