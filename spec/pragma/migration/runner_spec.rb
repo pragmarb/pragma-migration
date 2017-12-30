@@ -88,18 +88,10 @@ RSpec.describe Pragma::Migration::Runner do
     let(:time) { Time.new('2014-11-06T10:40:54+11:00') }
 
     let(:request) do
-      Rack::Request.new(
-        'PATH_INFO' => '/api/v1/articles/1',
-        'rack.input' => '',
-        'X-Api-Version' => '2017-12-25'
-      ).tap do |r|
-        {
-          'author_id' => 'test_id',
-          'published_at' => time.to_s
-        }.each_pair do |key, value|
-          r.update_param key, value
-        end
-      end
+      Rack::Request.new(Rack::MockRequest.env_for('/api/v1/articles/1', method: :patch, params: {
+        'author_id' => 'test_id',
+        'published_at' => time.to_s
+      }).merge('X-Api-Version' => '2017-12-25'))
     end
 
     it 'applies the migrations to the request' do
@@ -114,18 +106,10 @@ RSpec.describe Pragma::Migration::Runner do
     let(:time) { Time.new('2014-11-06T10:40:54+11:00') }
 
     let(:request) do
-      Rack::Request.new(
-        'PATH_INFO' => '/api/v1/articles/1',
-        'rack.input' => '',
-        'X-Api-Version' => '2017-12-25'
-      ).tap do |r|
-        {
-          'author_id' => 'test_id',
-          'published_at' => time.to_s
-        }.each_pair do |key, value|
-          r.update_param key, value
-        end
-      end
+      Rack::Request.new(Rack::MockRequest.env_for('/api/v1/articles/1', method: :patch, params: {
+        'author_id' => 'test_id',
+        'published_at' => time.to_s
+      }).merge('X-Api-Version' => '2017-12-25'))
     end
 
     let(:response) do

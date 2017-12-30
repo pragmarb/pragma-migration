@@ -23,13 +23,13 @@ RSpec.describe Pragma::Migration::Base do
   describe '.applies_to?' do
     it 'returns true when the pattern applies to a path' do
       expect(migration_klass).to be_applies_to(
-        Rack::Request.new('PATH_INFO' => '/api/v1/articles/1')
+        Rack::Request.new(Rack::MockRequest.env_for('/api/v1/articles/1', method: :patch))
       )
     end
 
     it 'returns false when the pattern does not apply to a path' do
       expect(migration_klass).not_to be_applies_to(
-        Rack::Request.new('PATH_INFO' => '/api/v1/posts/1')
+        Rack::Request.new(Rack::MockRequest.env_for('/api/v1/posts/1', method: :patch))
       )
     end
   end

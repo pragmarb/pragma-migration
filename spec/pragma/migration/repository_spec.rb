@@ -91,10 +91,11 @@ RSpec.describe Pragma::Migration::Repository do
     end
 
     it 'returns the migrations applying to the current request' do
-      expect(repository.migrations_for(Rack::Request.new(
-        'PATH_INFO' => '/api/v1/articles/1',
+      env = Rack::MockRequest.env_for('/api/v1/articles/1', method: :patch).merge(
         'X-Api-Version' => '2017-12-25'
-      ))).to eq([migration2])
+      )
+
+      expect(repository.migrations_for(Rack::Request.new(env))).to eq([migration2])
     end
   end
 end
