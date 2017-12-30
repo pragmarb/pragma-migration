@@ -7,6 +7,7 @@ module Pragma
         attr_reader :pattern, :description
 
         def applies_to?(request)
+          return false unless pattern
           request.path =~ Mustermann.new(pattern)
         end
 

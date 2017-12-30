@@ -1,7 +1,20 @@
 # frozen_string_literal: true
 
 RSpec.describe Pragma::Migration::Runner do
-  subject { described_class.new(repository) }
+  subject { described_class.new(bonding) }
+
+  let(:bonding) do
+    Pragma::Migration::Bond.new(repository: repository, request: request)
+  end
+
+  let(:time) { Time.new('2014-11-06T10:40:54+11:00') }
+
+  let(:request) do
+    Rack::Request.new(Rack::MockRequest.env_for('/api/v1/articles/1', method: :patch, params: {
+      'author_id' => 'test_id',
+      'published_at' => time.to_s
+    }).merge('X-Api-Version' => '2017-12-25'))
+  end
 
   let(:repository) do
     Class.new(Pragma::Migration::Repository) do
@@ -85,17 +98,8 @@ RSpec.describe Pragma::Migration::Runner do
   let(:user_version) { '2017-12-25' }
 
   describe '#run_upwards' do
-    let(:time) { Time.new('2014-11-06T10:40:54+11:00') }
-
-    let(:request) do
-      Rack::Request.new(Rack::MockRequest.env_for('/api/v1/articles/1', method: :patch, params: {
-        'author_id' => 'test_id',
-        'published_at' => time.to_s
-      }).merge('X-Api-Version' => '2017-12-25'))
-    end
-
     it 'applies the migrations to the request' do
-      expect(subject.run_upwards(request).params).to eq(
+      expect(subject.run_upwards.params).to eq(
         'author' => 'test_id',
         'published_at' => time.to_i
       )
@@ -120,7 +124,7 @@ RSpec.describe Pragma::Migration::Runner do
     end
 
     it 'applies the migrations to the response' do
-      expect(JSON.parse(subject.run_downwards(request, response).body.first)).to eq(
+      expect(JSON.parse(subject.run_downwards(response).body.first)).to eq(
         'published_at' => time.to_s,
         'author_id' => 'test_id'
       )
