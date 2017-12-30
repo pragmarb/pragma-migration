@@ -176,7 +176,7 @@ module API
           step :notify_subscribers!
 
           def notify_subscribers!(options)
-            return unless migrated?(Migration::NotifySubscribersAutomatically)
+            return unless migration_rolled?(Migration::NotifySubscribersAutomatically)
 
             # Notify subscribers here...
           end
@@ -242,4 +242,7 @@ The gem is available as open source under the terms of the [MIT License](http://
 - [ ] Class-based pattern matching (`#apply_to`)
 - [ ] Abstraction to deal with decorators/contracts directly
 - [ ] Include in Rails starter (and test)
-- [ ] Implement `Repository#migrated?` and operation hooks
+- [ ] Implement operation hooks
+  - [ ] Pass `Rack::Request` object from Rails to operations
+  - [ ] Implement hooks
+- [ ] Create repository-request binding class to cache rolled/pending migrations (?)

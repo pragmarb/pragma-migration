@@ -45,7 +45,7 @@ RSpec.describe Pragma::Migration::Repository do
     end
   end
 
-  describe '.migration_active?' do
+  describe '.migration_pending?' do
     let(:migration1) { Class.new(Pragma::Migration::Base) }
     let(:migration2) { Class.new(Pragma::Migration::Base) }
 
@@ -55,12 +55,31 @@ RSpec.describe Pragma::Migration::Repository do
       repository.send :version, '2017-12-26', [migration2]
     end
 
-    it 'returns false when the migration is not active' do
-      expect(repository.migration_active?(migration1, user_version: '2017-12-25')).to eq(false)
+    it 'returns false when the migration is not pending' do
+      expect(repository).not_to be_migration_pending(migration1, user_version: '2017-12-25')
     end
 
-    it 'returns true when the migration is active' do
-      expect(repository.migration_active?(migration2, user_version: '2017-12-25')).to eq(true)
+    it 'returns true when the migration is pending' do
+      expect(repository).to be_migration_pending(migration2, user_version: '2017-12-25')
+    end
+  end
+
+  describe '.migration_rolled?' do
+    let(:migration1) { Class.new(Pragma::Migration::Base) }
+    let(:migration2) { Class.new(Pragma::Migration::Base) }
+
+    before do
+      repository.send :version, '2017-12-24'
+      repository.send :version, '2017-12-25', [migration1]
+      repository.send :version, '2017-12-26', [migration2]
+    end
+
+    it 'returns false when the migration has not been rolled' do
+      expect(repository).not_to be_migration_rolled(migration2, user_version: '2017-12-25')
+    end
+
+    it 'returns true when the migration has been rolled' do
+      expect(repository).to be_migration_rolled(migration1, user_version: '2017-12-25')
     end
   end
 

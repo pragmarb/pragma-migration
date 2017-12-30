@@ -30,7 +30,7 @@ module Pragma
           end
         end
 
-        def migration_active?(migration, request: nil, user_version: nil)
+        def migration_pending?(migration, request: nil, user_version: nil)
           unless request || user_version
             fail ArgumentError, 'You must pass one of :request or :user_version'
           end
@@ -39,6 +39,19 @@ module Pragma
 
           @versions.any? do |version|
             version > user_version && version.migration?(migration)
+          end
+        end
+
+        def migration_rolled?(migration, request: nil, user_version: nil)
+          unless request || user_version
+            fail ArgumentError, 'You must pass one of :request or :user_version'
+          end
+
+          user_version ||= user_version_from(request)
+
+          @versions.each do |version|
+            break false if version > user_version
+            break true if version.migration?(migration)
           end
         end
 
