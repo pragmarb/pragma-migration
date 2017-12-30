@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Pragma::Migration::Middleware do
   subject { described_class.new(app, repository: repository) }
 
@@ -16,57 +18,50 @@ RSpec.describe Pragma::Migration::Middleware do
       end
 
       version '2017-12-25'
+    end.tap do |repo|
+      remove_id_from_author = Class.new(Pragma::Migration::Base) do
+        apply_to '/api/v1/posts/*'
 
-      version '2017-12-26', [
-        (
-          Class.new(Pragma::Migration::Base) do
-            apply_to '/api/v1/posts/*'
+        def up
+          request.update_param('author', request.delete_param('author_id'))
+        end
 
-            def up
-              request.update_param('author', request.delete_param('author_id'))
-            end
+        def down
+          parsed_body = JSON.parse(response.body.join(''))
+          Rack::Response.new(
+            JSON.dump(parsed_body.merge('author_id' => parsed_body.delete('author'))),
+            response.status,
+            response.headers
+          )
+        end
+      end
 
-            def down
-              parsed_body = JSON.parse(response.body.join(''))
+      remove_id_from_category = Class.new(Pragma::Migration::Base) do
+        apply_to '/api/v1/posts/*'
 
-              Rack::Response.new(
-                JSON.dump(parsed_body.merge('author_id' => parsed_body.delete('author'))),
-                response.status,
-                response.headers
-              )
-            end
-          end
-        )
-      ]
+        def up
+          request.update_param('category', request.delete_param('category_id'))
+        end
 
-      version '2017-12-27', [
-        (
-          Class.new(Pragma::Migration::Base) do
-            apply_to '/api/v1/posts/*'
+        def down
+          parsed_body = JSON.parse(response.body.join(''))
+          Rack::Response.new(
+            JSON.dump(parsed_body.merge('category_id' => parsed_body.delete('category'))),
+            response.status,
+            response.headers
+          )
+        end
+      end
 
-            def up
-              request.update_param('category', request.delete_param('category_id'))
-            end
-
-            def down
-              parsed_body = JSON.parse(response.body.join(''))
-
-              Rack::Response.new(
-                JSON.dump(parsed_body.merge('category_id' => parsed_body.delete('category'))),
-                response.status,
-                response.headers
-              )
-            end
-          end
-        )
-      ]
+      repo.send :version, '2017-12-26', [remove_id_from_author]
+      repo.send :version, '2017-12-27', [remove_id_from_category]
     end
   end
 
   let(:env) do
     Rack::MockRequest.env_for('/api/v1/posts/1', method: :patch, params: {
       'author_id' => 'test_author_id',
-      'category_id' => 'test_category_id',
+      'category_id' => 'test_category_id'
     }).merge('X-Test-Api-Version' => '2017-12-25')
   end
 
