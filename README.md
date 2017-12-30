@@ -176,7 +176,7 @@ module API
           step :notify_subscribers!
 
           def notify_subscribers!(options)
-            return unless migrated?(API::V1::Migration::NotifySubscribersAutomatically)
+            return unless migrated?(Migration::NotifySubscribersAutomatically)
 
             # Notify subscribers here...
           end
