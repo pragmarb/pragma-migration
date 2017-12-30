@@ -141,10 +141,51 @@ your clients can be: even if they are 10 versions behind, the migrations for all
 applied in order, so that the clients are able to interact with the very latest version without even 
 knowing it!
 
-### Using migrations to signal side effects
+### Using migrations to contain side effects
 
-TODO: Document how to use migrations (empty or not) to signal side effects that leak outside of the
-migration itself.
+In some cases, migrations are more complex than a simple update of the request and response. 
+
+Let's take this example scenario: you are building a blog API and you are working on a new version 
+that automatically sends an email to subscribers when a new article is sent, whereas the current 
+version requires a separate API call to accomplish this. Since you don't want to surprise existing 
+users with the new behavior, you only want to do this when the new API version is being used.
+
+You can use a no-op migration like the following for this:
+
+```ruby
+module API
+  module Migration
+    module V1
+      class NotifySubscribersAutomatically < Pragma::Migration::Base
+        describe 'Subscribers are now notified automatically when a new article is published.'
+      end
+    end
+  end
+end
+```
+
+Then, in your operation, you will only execute the new code if the migration has been executed (i.e.
+the user's version is greater than the migration's version):
+
+```ruby
+module API
+  module V1
+    module Article
+      module Operation
+        class Create < Pragma::Operation::Create
+          step :notify_subscribers!
+
+          def notify_subscribers!(options)
+            return unless migrated?(API::V1::Migration::NotifySubscribersAutomatically)
+
+            # Notify subscribers here...
+          end
+        end
+      end
+    end
+  end
+end
+```
 
 ### Implementing complex version tracking
 
@@ -201,3 +242,4 @@ The gem is available as open source under the terms of the [MIT License](http://
 - [ ] Class-based pattern matching (`#apply_to`)
 - [ ] Abstraction to deal with decorators/contracts directly
 - [ ] Include in Rails starter (and test)
+- [ ] Implement `Repository#migrated?` and operation hooks
