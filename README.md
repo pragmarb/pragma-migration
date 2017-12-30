@@ -53,8 +53,9 @@ following to `config/application.rb`:
 ```ruby
 module YourApp
   class Application < Rails::Application
-    config.middleware.insert_before 0, Pragma::Migration::Middleware,
-      repository: API::MigrationRepository
+    # ...
+
+    config.middleware.use Pragma::Migration::Middleware, repository: API::MigrationRepository
   end
 end
 ```
