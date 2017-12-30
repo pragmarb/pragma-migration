@@ -13,8 +13,9 @@ module Pragma
         original_request = Rack::Request.new(env)
         migrated_request = @runner.run_upwards(original_request)
 
-        original_response = Rack::Response.new(*@app.call(migrated_request.env))
-        migrated_response = @runner.run_downwards(request, original_response)
+        status, headers, body = @app.call(migrated_request.env)
+        original_response = Rack::Response.new(body, status, headers)
+        migrated_response = @runner.run_downwards(original_request, original_response)
 
         [migrated_response.status, migrated_response.headers, migrated_response.body]
       end
