@@ -67,6 +67,10 @@ When you start working on a new API version, you should define a new version in 
 ```ruby
 module API
   class MigrationRepository < Pragma::Migration::Repository
+    determine_version_with do |request|
+      request.get_header 'X-Api-Version'
+    end
+
     version '2017-12-17'
     
     # We will give this a date very far into the future for now, since we don't know the release
