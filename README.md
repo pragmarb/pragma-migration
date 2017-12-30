@@ -141,10 +141,15 @@ your clients can be: even if they are 10 versions behind, the migrations for all
 applied in order, so that the clients are able to interact with the very latest version without even 
 knowing it!
 
-### Side Effects
+### Using migrations to signal side effects
 
 TODO: Document how to use migrations (empty or not) to signal side effects that leak outside of the
 migration itself.
+
+### Implementing complex version tracking
+
+TODO: Tutorial on how to implement API version tracking like Stripe (first request stores API 
+version on user profile, subsequent calls use that version).
 
 ## FAQs
 
