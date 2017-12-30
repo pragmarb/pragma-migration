@@ -43,10 +43,6 @@ module API
 end
 ```
 
-Note that there's no restriction on the format of version numbers - just make sure they can be 
-sorted alphabetically. We recommend release dates. [Semantic Versioning](https://semver.org/) is 
-another option, but you will soon see that it stops to make sense with this approach to versioning. 
-
 Finally, we will mount the migration Rack middleware. In a Rails environment, this means adding the
 following to `config/application.rb`:
 
@@ -144,11 +140,6 @@ There is no limit to how many migrations or versions you can have. There's also 
 your clients can be: even if they are 10 versions behind, the migrations for all versions will be 
 applied in order, so that the clients are able to interact with the very latest version without even 
 knowing it!
-
-As you might imagine, Semantic Versioning doesn't make much sense when you adopt API migrations,
-because there are no breaking changes anymore. In some occasions, you might still want to adopt
-Semantic Versioning and just change the concept of what a breaking change is (e.g. renaming an
-API property is not breaking anymore!).
 
 ### Side Effects
 
