@@ -262,6 +262,7 @@ $ ruby -v benchmark.rb
 ruby 2.4.2p198 (2017-09-14 revision 59899) [x86_64-darwin16]
 
 Running 2k migrations, up and down:
+
        user     system      total        real
   0.090000   0.010000   0.100000 (  0.097414)
 ```

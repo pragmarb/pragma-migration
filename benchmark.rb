@@ -63,7 +63,7 @@ response = Rack::Response.new(JSON.dump(
   category: 'test_category_id'
 ))
 
-puts 'Running 2k migrations, up and down:'
+puts "Running 2k migrations, up and down:\n"
 
 Benchmark.bm do |x|
   x.report do
