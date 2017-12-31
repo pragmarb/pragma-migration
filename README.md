@@ -245,4 +245,4 @@ The gem is available as open source under the terms of the [MIT License](http://
 - [ ] Implement operation hooks
   - [ ] Pass `Rack::Request` object from Rails to operations
   - [ ] Implement hooks
-- [ ] Create repository-request binding class to cache rolled/pending migrations (?)
+- [ ] Create repository-request bind class to cache rolled/pending migrations (?)

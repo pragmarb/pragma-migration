@@ -22,6 +22,16 @@ module Pragma
         self.<=>(other).zero?
       end
 
+      def >=(other)
+        cmp = self.<=>(other)
+        cmp == 1 || cmp.zero?
+      end
+
+      def <=(other)
+        cmp = self.<=>(other)
+        cmp == -1 || cmp.zero?
+      end
+
       def <=>(other)
         other_number = other.is_a?(self.class) ? other.number : other
         Gem::Version.new(number) <=> Gem::Version.new(other_number)

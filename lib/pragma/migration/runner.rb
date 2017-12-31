@@ -3,26 +3,38 @@
 module Pragma
   module Migration
     class Runner
-      attr_reader :repository
+      attr_reader :bond
 
-      def initialize(repository)
-        @repository = repository
+      def initialize(bond)
+        @bond = bond
       end
 
-      def run_upwards(request)
-        repository.migrations_for(request).each do |migration|
-          request = migration.up(request)
-        end
-
-        request
+      def request
+        bond.request
       end
 
-      def run_downwards(request, response)
-        repository.migrations_for(request).reverse.each do |migration|
-          response = migration.down(request, response)
+      def repository
+        bond.repository
+      end
+
+      def run_upwards
+        result = request
+
+        bond.applying_migrations.each do |migration|
+          result = migration.up(result)
         end
 
-        response
+        result
+      end
+
+      def run_downwards(response)
+        result = response
+
+        bond.applying_migrations.reverse.each do |migration|
+          result = migration.down(request, result)
+        end
+
+        result
       end
     end
   end

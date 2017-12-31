@@ -37,7 +37,7 @@ RSpec.describe Pragma::Migration::Middleware do
       end
 
       remove_id_from_category = Class.new(Pragma::Migration::Base) do
-        apply_to '/api/v1/posts/*'
+        apply_to '/api/v1/articles/*'
 
         def up
           request.update_param('category', request.delete_param('category_id'))
@@ -69,8 +69,10 @@ RSpec.describe Pragma::Migration::Middleware do
     expect(app).to receive(:call)
       .with(a_hash_including(
         'rack.request.query_hash' => {
-          'author' => 'test_author_id',
-          'category' => 'test_category_id'
+          'author' => 'test_author_id'
+        },
+        'rack.request.form_hash' => {
+          'category_id' => 'test_category_id'
         }
       ))
       .once
