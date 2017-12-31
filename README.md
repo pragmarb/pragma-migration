@@ -29,10 +29,12 @@ Next, we're going to create a migration repository for our API:
 
 ```ruby
 module API
-  class MigrationRepository < Pragma::Migration::Repository
-    # The initial version isn't allowed to have migrations, because there is nothing
-    # to migrate from.
-    version '2017-12-17'
+  module V1
+    class MigrationRepository < Pragma::Migration::Repository
+      # The initial version isn't allowed to have migrations, because there is nothing
+      # to migrate from.
+      version '2017-12-17'
+    end
   end
 end
 ```
@@ -46,7 +48,7 @@ module YourApp
     # ...
 
     config.middleware.use Pragma::Migration::Middleware, 
-      repository: API::MigrationRepository,
+      repository: API::V1::MigrationRepository,
       user_version_proc: (lambda do |request|
         # `request` here is a `Rack::Request` object.
         request.get_header 'X-Api-Version'
@@ -61,14 +63,16 @@ When you start working on a new API version, you should define a new version in 
 
 ```ruby
 module API
-  class MigrationRepository < Pragma::Migration::Repository
-    version '2017-12-17'
-    
-    # We will give this a date very far into the future for now, since we don't know the release
-    # date yet. 
-    version '2100-01-01', [
-      # Add migrations here...
-    ]
+  module V1
+    class MigrationRepository < Pragma::Migration::Repository
+      version '2017-12-17'
+      
+      # We will give this a date very far into the future for now, since we don't know the release
+      # date yet. 
+      version '2100-01-01', [
+        # Add migrations here...
+      ]
+    end
   end
 end
 ```
@@ -84,25 +88,27 @@ To accomplish it, you might write a new migration like this:
 
 ```ruby
 module API
-  module Migration
-    class ChangeTimestampsToUnixEpochs < Pragma::Migration::Base
-      # You can use any pattern supported by Mustermann here.
-      apply_to '/articles/*'
-      
-      # Optionally, you can write a description for the migration, which you can use for
-      # documentation and changelogs.
-      describe 'Timestamps have been replaced with seconds since the epoch in the Articles API.' 
-      
-      # The `up` method is called when a client on an old version makes a request, and should
-      # convert the request into a format that can be consumed by the operation.
-      def up
-        request.merge('created_at' => Time.parse(request['created_at']).to_i)
-      end
-      
-      # The `down` method is called when a response is sent to a client on an old version, and
-      # convert the response into a format that can be consumed by the client.
-      def down
-        response.merge('created_at' => Time.at(response['created_at']).iso8601)
+  module V1
+    module Migration
+      class ChangeTimestampsToUnixEpochs < Pragma::Migration::Base
+        # You can use any pattern supported by Mustermann here.
+        apply_to '/articles/*'
+        
+        # Optionally, you can write a description for the migration, which you can use for
+        # documentation and changelogs.
+        describe 'Timestamps have been replaced with seconds since the epoch in the Articles API.' 
+        
+        # The `up` method is called when a client on an old version makes a request, and should
+        # convert the request into a format that can be consumed by the operation.
+        def up
+          request.merge('created_at' => Time.parse(request['created_at']).to_i)
+        end
+        
+        # The `down` method is called when a response is sent to a client on an old version, and
+        # convert the response into a format that can be consumed by the client.
+        def down
+          response.merge('created_at' => Time.at(response['created_at']).iso8601)
+        end
       end
     end
   end
@@ -113,12 +119,14 @@ Now, you will just add your migration to the repository:
 
 ```ruby
 module API
-  class MigrationRepository < Pragma::Migration::Repository
-    version '2017-12-17'
+  module V1
+    class MigrationRepository < Pragma::Migration::Repository
+      version '2017-12-17'
 
-    version '2100-01-01', [
-      API::Migration::ChangeTimestampsToUnixEpochs,
-    ]
+      version '2100-01-01', [
+        API::V1::Migration::ChangeTimestampsToUnixEpochs,
+      ]
+    end
   end
 end
 ```
@@ -189,7 +197,7 @@ module YourApp
     # ...
 
     config.middleware.use Pragma::Migration::Middleware, 
-      repository: API::MigrationRepository,
+      repository: API::V1::MigrationRepository,
       user_version_proc: (lambda do |request|
         current_user = UserFinder.(request)
         current_user&.api_version # nil or an invalid value will default to the latest version
@@ -211,7 +219,7 @@ module YourApp
     # ...
 
     config.middleware.use Pragma::Migration::Middleware, 
-      repository: API::MigrationRepository,
+      repository: API::V1::MigrationRepository,
       user_version_proc: (lambda do |request|
         request.get_header('X-Api-Version') || UserFinder.(request)&.api_version
       end)
@@ -235,6 +243,13 @@ However, API migrations are very different from DB migrations: DB migrations are
 forgotten forever, API migrations are executed on _every request_ as long as clients are running on
 an outdated version of your API. This means that API migrations should be considered an active,
 evolving part of your codebase that you will have to maintain over time.
+
+### Why should I keep the `/v1` prefix?
+
+The main reason for keeping the `/v1` prefix and the `API::V1` namespace in your API is that you
+might want to introduce a change so disruptive that it warrants a separate major version, like
+migrating from REST to GraphQL (:cry:). In this case, you won't be able to use Pragma::Migration to
+contain the change, so you will need to create a completely separate codebase and URL scheme.
 
 ### What is the impact on performance?
 
