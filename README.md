@@ -47,8 +47,6 @@ module YourApp
 
     config.middleware.use Pragma::Migration::Middleware, 
       repository: API::MigrationRepository,
-
-      # `user_version_proc` is optional: the default implementation is below.
       user_version_proc: (lambda do |request|
         # `request` here is a `Rack::Request` object.
         request.get_header 'X-Api-Version'
