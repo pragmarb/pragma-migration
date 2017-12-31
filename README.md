@@ -284,7 +284,8 @@ The gem is available as open source under the terms of the [MIT License](http://
 - [ ] Abstraction to deal with decorators/contracts directly
   - [ ] Class-based pattern matching (in `Base#apply_to`)
   - [ ] `Base#add_property`, `Base#transform_property` etc.
-- [ ] Include in Rails starter (and test)
+- [ ] Include and test in `pragma-rails`
+- [ ] Include in `pragma-rails-starter`
 - [ ] Implement operation hooks
   - [ ] Pass `Rack::Request` object from Rails to operations (in `pragma-rails`)
   - [ ] Implement hooks (here or in `pragma`?)
