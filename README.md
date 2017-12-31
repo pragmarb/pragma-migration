@@ -180,8 +180,44 @@ end
 
 ### Implementing complex version tracking
 
-TODO: Tutorial on how to implement API version tracking like Stripe (first request stores API 
-version on user profile, subsequent calls use that version).
+It is possible to implement more complex tracking strategies for determining your user's API 
+version. For instance, you might want to store the API version on the user profile instead:
+
+```ruby
+module YourApp
+  class Application < Rails::Application
+    # ...
+
+    config.middleware.use Pragma::Migration::Middleware, 
+      repository: API::MigrationRepository,
+      user_version_proc: (lambda do |request|
+        current_user = UserFinder.(request)
+        current_user&.api_version # nil or an invalid value will default to the latest version
+      end)
+  end
+end
+```
+
+The possibilities here are endless. Stripe adopts a hybrid strategy: they freeze a user's API 
+version when the user performs the first request. They allow the user to upgrade to newer versions
+either permanently (you are not allowed to go back after a grace period) or on a per-request basis,
+which is useful when doing partial upgrades.
+
+This strategy can be accomplished quite easily with the following configuration:
+
+```ruby
+module YourApp
+  class Application < Rails::Application
+    # ...
+
+    config.middleware.use Pragma::Migration::Middleware, 
+      repository: API::MigrationRepository,
+      user_version_proc: (lambda do |request|
+        request.get_header('X-Api-Version') || UserFinder.(request)&.api_version
+      end)
+  end
+end
+```
 
 ## FAQs
 
@@ -236,3 +272,4 @@ The gem is available as open source under the terms of the [MIT License](http://
 - [ ] Implement operation hooks
   - [ ] Pass `Rack::Request` object from Rails to operations
   - [ ] Implement hooks
+- [ ] Allow to render an error and halt from `user_version_proc`
