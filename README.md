@@ -290,5 +290,4 @@ The gem is available as open source under the terms of the [MIT License](http://
   - [ ] Pass `Rack::Request` object from Rails to operations (in `pragma-rails`)
   - [ ] Implement hooks (here or in `pragma`?)
 - [ ] Allow to render an error and halt from `user_version_proc`
-- [ ] Isolate all unit tests
 - [ ] Write and execute benchmark (1k migrations?)
