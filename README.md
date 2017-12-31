@@ -281,11 +281,11 @@ The gem is available as open source under the terms of the [MIT License](http://
 
 ## Todos
 
-- [ ] Prevent initial version from having migrations
-- [ ] Class-based pattern matching (`#apply_to`)
 - [ ] Abstraction to deal with decorators/contracts directly
+  - [ ] Class-based pattern matching (in `Base#apply_to`)
+  - [ ] `Base#add_property`, `Base#transform_property` etc.
 - [ ] Include in Rails starter (and test)
 - [ ] Implement operation hooks
-  - [ ] Pass `Rack::Request` object from Rails to operations
-  - [ ] Implement hooks
-- [ ] Allow to render an error and halt from `user_version_proc`
+  - [ ] Pass `Rack::Request` object from Rails to operations (in `pragma-rails`)
+  - [ ] Implement hooks (here or in `pragma`?)
+- [ ] Allow to render an error and halt from `#user_version_proc`
