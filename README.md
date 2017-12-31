@@ -25,7 +25,7 @@ Or install it yourself as:
 
     $ gem install pragma-migration
 
-Next, we're going to create a migration repository for our API:
+Next, you're going to create a migration repository for our API:
 
 ```ruby
 module API
@@ -39,8 +39,8 @@ module API
 end
 ```
 
-Finally, we will mount the migration Rack middleware. In a Rails environment, this means adding the
-following to `config/application.rb`:
+Finally, you need to mount the migration Rack middleware. In a Rails environment, this means adding 
+the following to `config/application.rb`:
 
 ```ruby
 module YourApp
