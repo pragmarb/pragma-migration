@@ -248,8 +248,8 @@ evolving part of your codebase that you will have to maintain over time.
 
 The main reason for keeping the `/v1` prefix and the `API::V1` namespace in your API is that you
 might want to introduce a change so disruptive that it warrants a separate major version, like
-migrating from REST to GraphQL (:cry:). In this case, you won't be able to use Pragma::Migration to
-contain the change, so you will need to create a completely separate codebase and URL scheme.
+migrating from REST to GraphQL (:cry:). In this case, you won't be able to use migrations to contain 
+the change, so you will need to create a completely separate codebase and URL scheme.
 
 ### What is the impact on performance?
 
