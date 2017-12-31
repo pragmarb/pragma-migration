@@ -63,15 +63,17 @@ response = Rack::Response.new(JSON.dump(
   category: 'test_category_id'
 ))
 
-result = Benchmark.measure do
-  runner = Pragma::Migration::Runner.new(Pragma::Migration::Bond.new(
-    repository: Repository,
-    request: request,
-    user_version: '2017-12-26'
-  ))
+puts 'Running 2k migrations, up and down:'
 
-  runner.run_upwards
-  runner.run_downwards(response)
+Benchmark.bm do |x|
+  x.report do
+    runner = Pragma::Migration::Runner.new(Pragma::Migration::Bond.new(
+      repository: Repository,
+      request: request,
+      user_version: '2017-12-26'
+    ))
+
+    runner.run_upwards
+    runner.run_downwards(response)
+  end
 end
-
-puts result

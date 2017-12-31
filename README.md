@@ -254,7 +254,17 @@ codebase and URL scheme.
 
 ### What is the impact on performance?
 
-No idea yet, but if others do it, we should be able to do it too. Stay tuned!
+We have a benchmark in `benchmark.rb`:
+
+```console
+$ ruby -v benchmark.rb
+
+ruby 2.4.2p198 (2017-09-14 revision 59899) [x86_64-darwin16]
+
+Running 2k migrations, up and down:
+       user     system      total        real
+  0.090000   0.010000   0.100000 (  0.097414)
+```
 
 ### Are you out of your mind?
 
