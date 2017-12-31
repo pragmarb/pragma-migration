@@ -9,7 +9,7 @@ require 'pragma/migration/version'
 require 'pragma/migration/runner'
 require 'pragma/migration/bond'
 require 'pragma/migration/middleware'
-require 'pragma/migration/version_number'
+require 'pragma/migration/gem_version'
 
 module Pragma
   module Migration
