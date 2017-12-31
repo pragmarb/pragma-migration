@@ -256,7 +256,7 @@ codebase and URL scheme.
 
 We have a benchmark in `benchmark.rb`:
 
-```console
+```
 $ ruby -v benchmark.rb
 
 ruby 2.4.2p198 (2017-09-14 revision 59899) [x86_64-darwin16]
