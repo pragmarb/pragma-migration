@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe Pragma::Migration::Bond do
-  subject { described_class.new(repository: repository, request: request) }
+  subject do
+    described_class.new(
+      repository: repository,
+      request: request,
+      user_version: '2017-12-25'
+    )
+  end
 
   let(:migration1) { Class.new(Pragma::Migration::Base) }
   let(:migration2) do

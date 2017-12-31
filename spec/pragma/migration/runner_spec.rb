@@ -1,10 +1,14 @@
 # frozen_string_literal: true
 
 RSpec.describe Pragma::Migration::Runner do
-  subject { described_class.new(bonding) }
+  subject { described_class.new(bond) }
 
-  let(:bonding) do
-    Pragma::Migration::Bond.new(repository: repository, request: request)
+  let(:bond) do
+    Pragma::Migration::Bond.new(
+      repository: repository,
+      request: request,
+      user_version: '2017-12-25'
+    )
   end
 
   let(:time) { Time.new('2014-11-06T10:40:54+11:00') }

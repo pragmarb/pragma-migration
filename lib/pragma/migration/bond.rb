@@ -3,11 +3,12 @@
 module Pragma
   module Migration
     class Bond
-      attr_reader :repository, :request
+      attr_reader :repository, :request, :user_version
 
-      def initialize(repository:, request:)
+      def initialize(repository:, request:, user_version:)
         @repository = repository
         @request = request
+        @user_version = user_version
       end
 
       def pending_migrations
@@ -35,10 +36,6 @@ module Pragma
 
       def migration_applies?(migration)
         applying_migrations.include?(migration)
-      end
-
-      def user_version
-        @user_version ||= repository.user_version_from(request)
       end
 
       private

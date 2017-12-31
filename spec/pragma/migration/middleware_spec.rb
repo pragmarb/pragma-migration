@@ -1,7 +1,14 @@
 # frozen_string_literal: true
 
 RSpec.describe Pragma::Migration::Middleware do
-  subject { described_class.new(app, repository: repository) }
+  subject do
+    described_class.new(app,
+      repository: repository,
+      user_version_proc: (lambda do |request|
+        request.get_header 'X-Test-Api-Version'
+      end)
+    )
+  end
 
   let(:app) do
     Class.new do
@@ -13,10 +20,6 @@ RSpec.describe Pragma::Migration::Middleware do
 
   let(:repository) do
     Class.new(Pragma::Migration::Repository) do
-      determine_version_with do |request|
-        request.get_header 'X-Test-Api-Version'
-      end
-
       version '2017-12-25'
     end.tap do |repo|
       remove_id_from_author = Class.new(Pragma::Migration::Base) do
