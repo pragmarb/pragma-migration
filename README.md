@@ -77,12 +77,12 @@ module API
 end
 ```
 
-Suppose you are working on a new API version and you decide to start using seconds since the epoch 
-instead of timestamps. In order to support users who are on an older version of the API, you will
+Suppose you are working on a new API version and you decide to remove the `_id` suffix from 
+association properties. In order to support users who are on an older version of the API, you will
 need to do the following:
 
-- convert their input timestamps into UNIX epochs before passing them to your code;
-- convert your UNIX epochs to timestamps before sending the HTTP response.
+- remove the `_id` suffix from their requests;
+- add the `_id` suffix back to their responses.
 
 To accomplish it, you might write a new migration like this:
 
@@ -90,24 +90,21 @@ To accomplish it, you might write a new migration like this:
 module API
   module V1
     module Migration
-      class ChangeTimestampsToUnixEpochs < Pragma::Migration::Base
-        # You can use any pattern supported by Mustermann here.
-        apply_to '/articles/*'
-        
-        # Optionally, you can write a description for the migration, which you can use for
-        # documentation and changelogs.
-        describe 'Timestamps have been replaced with seconds since the epoch in the Articles API.' 
-        
-        # The `up` method is called when a client on an old version makes a request, and should
-        # convert the request into a format that can be consumed by the operation.
+      class RemoveIdSuffixFromAuthorInArticles < Pragma::Migration::Base
+        apply_to '/api/v1/articles/:id'
+        describe 'The _id suffix has been removed from the author property in the Articles API.'
+      
         def up
-          request.merge('created_at' => Time.parse(request['created_at']).to_i)
+          request.update_param 'author', request.delete_param('author_id')
         end
         
-        # The `down` method is called when a response is sent to a client on an old version, and
-        # convert the response into a format that can be consumed by the client.
         def down
-          response.merge('created_at' => Time.at(response['created_at']).iso8601)
+          parsed_body = JSON.parse(response.body.join(''))
+          Rack::Response.new(
+            JSON.dump(parsed_body.merge('author' => parsed_body['author_id'])),
+            response.status,
+            response.headers
+          )
         end
       end
     end
