@@ -91,13 +91,21 @@ module API
   module V1
     module Migration
       class RemoveIdSuffixFromAuthorInArticles < Pragma::Migration::Base
+        # You can use any pattern supported by Mustermann here.
         apply_to '/api/v1/articles/:id'
+
+        # Optionally, you can write a description for the migration, which you can use for
+        # documentation and changelogs.
         describe 'The _id suffix has been removed from the author property in the Articles API.'
-      
+
+        # The `up` method is called when a client on an old version makes a request, and should
+        # convert the request into a format that can be consumed by the operation.
         def up
           request.update_param 'author', request.delete_param('author_id')
         end
-        
+
+        # The `down` method is called when a response is sent to a client on an old version, and
+        # convert the response into a format that can be consumed by the client.
         def down
           parsed_body = JSON.parse(response.body.join(''))
           Rack::Response.new(
