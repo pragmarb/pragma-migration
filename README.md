@@ -254,7 +254,10 @@ codebase and URL scheme.
 
 ### What is the impact on performance?
 
-We have a benchmark in `benchmark.rb`:
+We have a simple benchmark that runs 2,000 migrations in both directions. You can check out 
+`benchmark.rb` for the details. Improvements are welcome!
+
+Here are the results on my machine, a MacBook Pro 2017 i7 @ 3.1 GHz:
 
 ```
 $ ruby -v benchmark.rb
