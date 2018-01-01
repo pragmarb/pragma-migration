@@ -10,7 +10,32 @@ module Pragma
     #
     # Migrations can also skip the definition of the up and down logic, in which case they become
     # no-ops. This is useful when containing side effects (for instance, you can use a migration
-    # just to indicate that a certain behavior has become opt-out rather than opt-in).
+    # just to indicate that a certain behavior has become opt-out rather than opt-in). You can check
+    # the readme for more details on how to use no-op migrations.
+    #
+    # @example A regular migration
+    #   class RemoveIdSuffixFromAuthorInArticles < Pragma::Migration::Base
+    #     apply_to '/api/v1/articles/:id'
+    #     describe 'The _id suffix has been removed from the author property in the Articles API.'
+    #
+    #     def up
+    #       request.update_param 'author', request.delete_param('author_id')
+    #     end
+    #
+    #     def down
+    #       parsed_body = JSON.parse(response.body.join(''))
+    #       Rack::Response.new(
+    #         JSON.dump(parsed_body.merge('author' => parsed_body['author_id'])),
+    #         response.status,
+    #         response.headers
+    #       )
+    #     end
+    #   end
+    #
+    # @example A no-op migration
+    #   class NotifyArticleSubscribersAutomatically < Pragma::Migration::Base
+    #     describe 'Subscribers are now notified of new articles automatically.'
+    #   end
     class Base
       class << self
         # @!attribute [r] pattern
@@ -125,6 +150,8 @@ module Pragma
       # @return [Rack::Response]
       #
       # @raise [RuntimeError] when the migration is being run upwards
+      #
+      # @todo Create our own exception class for when the response is not accessible.
       def response
         fail 'Cannot access response when migrating upwards!' unless @response
         @response
