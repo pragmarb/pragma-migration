@@ -2,6 +2,7 @@
 
 module Pragma
   module Migration
+
     class Version
       attr_reader :number, :migrations
 

@@ -105,7 +105,7 @@ module API
         end
 
         # The `down` method is called when a response is sent to a client on an old version, and
-        # convert the response into a format that can be consumed by the client.
+        # should convert the response into a format that can be consumed by the client.
         def down
           parsed_body = JSON.parse(response.body.join(''))
           Rack::Response.new(
