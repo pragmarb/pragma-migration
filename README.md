@@ -306,3 +306,4 @@ The gem is available as open source under the terms of the [MIT License](http://
   - [ ] Class-based pattern matching (in `Base#apply_to`)
   - [ ] `Base#add_property`, `Base#transform_property` etc.
 - [ ] Improve benchmark with different types of migrations
+- [ ] Figure out how to apply migrations on collections (e.g. `Base.migrate_each`?)
