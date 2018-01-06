@@ -300,7 +300,6 @@ The gem is available as open source under the terms of the [MIT License](http://
 
 ## Todos
 
-- [ ] Document API
 - [ ] Implement operation hooks
   - [ ] Pass `Rack::Request` object from Rails to operations (in `pragma-rails`)
   - [ ] Implement hooks (here or in `pragma`?)
