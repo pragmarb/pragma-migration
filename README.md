@@ -1,7 +1,6 @@
 # Pragma::Migration
 
 [![Build Status](https://travis-ci.org/pragmarb/pragma-migration.svg?branch=master)](https://travis-ci.org/pragmarb/pragma-migration)
-[![Dependency Status](https://gemnasium.com/badges/github.com/pragmarb/pragma-migration.svg)](https://gemnasium.com/github.com/pragmarb/pragma-migration)
 [![Coverage Status](https://coveralls.io/repos/github/pragmarb/pragma-migration/badge.svg?branch=master)](https://coveralls.io/github/pragmarb/pragma-migration?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e51e8d7489eb72ab97ba/maintainability)](https://codeclimate.com/github/pragmarb/pragma-migration/maintainability)
 
