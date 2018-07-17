@@ -14,20 +14,18 @@ module Pragma
       #
       # @!attribute [r] request
       #   @return [Rack::Request] the request this bond will work with
-      #
-      # @!attribute [r] user_version
-      #   @return [String] the user's API version, usually determined with +user_version_proc+
-      attr_reader :repository, :request, :user_version
+      attr_reader :repository, :request, :user_version_proc
 
       # Initializes the bond.
       #
       # @param repository [Repository] the repository to use
       # @param request [Rack::Request] the request to work with
-      # @param user_version [String] the user's API version
-      def initialize(repository:, request:, user_version:)
+      # @param user_version_proc [Proc] a Proc that takes a Rake request and returns the request's
+      #   API version
+      def initialize(repository:, request:, user_version_proc:)
         @repository = repository
         @request = request
-        @user_version = user_version
+        @user_version_proc = user_version_proc
       end
 
       # Returns the migrations that must be applied on the user's API version.
@@ -104,6 +102,21 @@ module Pragma
       # @return [Boolean] whether the migration applies to the request
       def migration_applies?(migration)
         applying_migrations.include?(migration)
+      end
+
+      # Returns the user's API version for this request.
+      #
+      # @return [String] the API version identifier
+      def user_version
+        return @user_version if @user_version
+
+        version = user_version_proc.call(request)
+
+        @user_version ||= if version && repository.sorted_versions.include?(version)
+          version
+        else
+          repository.sorted_versions.last.number
+        end
       end
 
       private

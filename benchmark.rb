@@ -70,7 +70,7 @@ Benchmark.bm do |x|
     runner = Pragma::Migration::Runner.new(Pragma::Migration::Bond.new(
       repository: Repository,
       request: request,
-      user_version: '2017-12-26'
+      user_version_proc: proc { '2017-12-26' }
     ))
 
     runner.run_upwards

@@ -15,20 +15,11 @@ module Pragma
     #       request.get_header 'X-Api-Version'
     #     end)
     class Middleware
-      # The default for +user_version_proc+.
-      DEFAULT_VERSION_PROC = lambda do |request|
-        request.get_header('X-Api-Version')
-      end
-
       # Initializes the middleware.
       #
       # @param app [Object] your app
-      # @param repository [Repository] your migration repository
-      # @param user_version_proc [Proc] a proc that takes a request and returns a version number
-      def initialize(app, repository:, user_version_proc: DEFAULT_VERSION_PROC)
+      def initialize(app)
         @app = app
-        @repository = repository
-        @user_version_proc = user_version_proc
       end
 
       # Executes the middleware.
@@ -51,9 +42,9 @@ module Pragma
         original_request = Rack::Request.new(env)
 
         runner = Runner.new(Bond.new(
-          repository: @repository,
+          repository: repository,
           request: original_request,
-          user_version: user_version_from(original_request)
+          user_version_proc: Pragma::Migration.user_version_proc,
         ))
 
         migrated_request = runner.run_upwards
@@ -67,9 +58,8 @@ module Pragma
 
       private
 
-      def user_version_from(request)
-        version = @user_version_proc.call(request)
-        @repository.sorted_versions.include?(version) ? version : @repository.sorted_versions.last
+      def repository
+        Pragma::Migration.repository
       end
     end
   end
