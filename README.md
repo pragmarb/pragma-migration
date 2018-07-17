@@ -163,8 +163,8 @@ You can use a no-op migration like the following for this:
 
 ```ruby
 module API
-  module Migration
-    module V1
+  module V1
+    module Migration
       class NotifySubscribersAutomatically < Pragma::Migration::Base
         describe 'Subscribers are now notified automatically when a new article is published.'
       end
