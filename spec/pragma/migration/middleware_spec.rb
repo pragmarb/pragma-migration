@@ -2,12 +2,14 @@
 
 RSpec.describe Pragma::Migration::Middleware do
   subject do
-    described_class.new(app,
-      repository: repository,
-      user_version_proc: (lambda do |request|
-        request.get_header 'X-Test-Api-Version'
-      end)
-    )
+    described_class.new(app)
+  end
+
+  before do
+    Pragma::Migration.repository = repository
+    Pragma::Migration.user_version_proc = lambda do |request|
+      request.get_header 'X-Test-Api-Version'
+    end
   end
 
   let(:app) do

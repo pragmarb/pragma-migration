@@ -7,7 +7,7 @@ RSpec.describe Pragma::Migration::Runner do
     Pragma::Migration::Bond.new(
       repository: repository,
       request: request,
-      user_version: '2017-12-25'
+      user_version_proc: Pragma::Migration::DEFAULT_USER_VERSION_PROC
     )
   end
 

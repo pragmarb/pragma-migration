@@ -1,4 +1,5 @@
 require "bundler/setup"
+require 'pragma/operation'
 require "pragma/migration"
 
 require 'coveralls'

@@ -26,6 +26,9 @@ Style/BlockDelimiters:
   Exclude:
     - 'spec/**/*'
 
+Style/Documentation:
+  Enabled: false
+
 Layout/AlignParameters:
   EnforcedStyle: with_fixed_indentation
 
