@@ -285,17 +285,3 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/pragma
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
-## Todos
-
-- [ ] Implement operation hooks
-  - [ ] Pass `Rack::Request` object from Rails to operations (in `pragma-rails`)
-  - [ ] Implement hooks (here or in `pragma`?)
-- [ ] Include and test in `pragma-rails`
-- [ ] Include in `pragma-rails-starter`
-- [ ] Allow to render an error and halt from `user_version_proc`
-- [ ] Abstraction to deal with decorators/contracts directly
-  - [ ] Class-based pattern matching (in `Base#apply_to`)
-  - [ ] `Base#add_property`, `Base#transform_property` etc.
-- [ ] Improve benchmark with different types of migrations
-- [ ] Figure out how to apply migrations on collections (e.g. `Base.migrate_each`?)
