@@ -70,7 +70,7 @@ module Pragma
       def run_downwards(response)
         result = response
 
-        bond.applying_migrations.reverse.each do |migration|
+        bond.applying_migrations.reverse_each do |migration|
           result = migration.down(request, result)
         end
 
