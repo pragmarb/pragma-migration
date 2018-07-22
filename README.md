@@ -204,17 +204,9 @@ It is possible to implement more complex tracking strategies for determining you
 version. For instance, you might want to store the API version on the user profile instead:
 
 ```ruby
-module YourApp
-  class Application < Rails::Application
-    # ...
-
-    config.middleware.use Pragma::Migration::Middleware,
-      repository: API::V1::MigrationRepository,
-      user_version_proc: (lambda do |request|
-        current_user = UserFinder.(request)
-        current_user&.api_version # nil or an invalid value will default to the latest version
-      end)
-  end
+Pragma::Migration.user_version_proc = lambda do |request|
+  current_user = UserFinder.(request)
+  current_user&.api_version # nil or an invalid value will default to the latest version
 end
 ```
 
@@ -226,16 +218,8 @@ which is useful when doing partial upgrades.
 This strategy can be accomplished quite easily with the following configuration:
 
 ```ruby
-module YourApp
-  class Application < Rails::Application
-    # ...
-
-    config.middleware.use Pragma::Migration::Middleware,
-      repository: API::V1::MigrationRepository,
-      user_version_proc: (lambda do |request|
-        request.get_header('X-Api-Version') || UserFinder.(request)&.api_version
-      end)
-  end
+Pragma::Migration.user_version_proc = lambda do |request|
+  request.get_header('X-Api-Version') || UserFinder.(request)&.api_version
 end
 ```
 
