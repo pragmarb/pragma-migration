@@ -42,10 +42,12 @@ And configure the gem:
 
 ```ruby
 # config/initializers/pragma_migration.rb or equivalent in your framework
-Pragma::Migration.repository = API::V1::MigrationRepository
-Pragma::Migration.user_version_proc = lambda do |request|
-  # `request` here is a `Rack::Request` object.
-  request.get_header 'X-Api-Version'
+Pragma::Migration.configure do |config|
+  config.repository = API::V1::MigrationRepository
+  config.user_version_proc = lambda do |request|
+    # `request` here is a `Rack::Request` object.
+    request.get_header 'X-Api-Version'
+  end
 end
 ```
 
@@ -204,9 +206,13 @@ It is possible to implement more complex tracking strategies for determining you
 version. For instance, you might want to store the API version on the user profile instead:
 
 ```ruby
-Pragma::Migration.user_version_proc = lambda do |request|
-  current_user = UserFinder.(request)
-  current_user&.api_version # nil or an invalid value will default to the latest version
+Pragma::Migration.configure do |config|
+  # ...
+
+  config.user_version_proc = lambda do |request|
+    current_user = UserFinder.(request)
+    current_user&.api_version # nil or an invalid value will default to the latest version
+  end
 end
 ```
 
@@ -218,8 +224,12 @@ which is useful when doing partial upgrades.
 This strategy can be accomplished quite easily with the following configuration:
 
 ```ruby
-Pragma::Migration.user_version_proc = lambda do |request|
-  request.get_header('X-Api-Version') || UserFinder.(request)&.api_version
+Pragma::Migration.configure do |config|
+  # ...
+
+  config.user_version_proc = lambda do |request|
+    request.get_header('X-Api-Version') || UserFinder.(request)&.api_version
+  end
 end
 ```
 

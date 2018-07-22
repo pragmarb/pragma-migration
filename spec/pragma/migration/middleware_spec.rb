@@ -6,9 +6,11 @@ RSpec.describe Pragma::Migration::Middleware do
   end
 
   before do
-    Pragma::Migration.repository = repository
-    Pragma::Migration.user_version_proc = lambda do |request|
-      request.get_header 'X-Test-Api-Version'
+    Pragma::Migration.configure do |config|
+      config.repository = repository
+      config.user_version_proc = lambda do |request|
+        request.get_header 'X-Test-Api-Version'
+      end
     end
   end
 

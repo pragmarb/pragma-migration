@@ -6,14 +6,6 @@ module Pragma
     #
     # This middleware can be added to your Rack application in order to automatically migrate your
     # users' requests up and your app's responses down.
-    #
-    # @example Configuring the middleware
-    #   use Pragma::Migration::Middleware,
-    #     repository: API::V1::MigrationRepository,
-    #     user_version_proc: (lambda do |request|
-    #       # `request` here is a `Rack::Request` object.
-    #       request.get_header 'X-Api-Version'
-    #     end)
     class Middleware
       # Initializes the middleware.
       #
@@ -44,7 +36,7 @@ module Pragma
         runner = Runner.new(Bond.new(
           repository: repository,
           request: original_request,
-          user_version_proc: Pragma::Migration.user_version_proc,
+          user_version_proc: Pragma::Migration.config.user_version_proc
         ))
 
         migrated_request = runner.run_upwards
@@ -59,7 +51,7 @@ module Pragma
       private
 
       def repository
-        Pragma::Migration.repository
+        Pragma::Migration.config.repository
       end
     end
   end
