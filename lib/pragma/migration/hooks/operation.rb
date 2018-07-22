@@ -78,9 +78,9 @@ module Pragma
 
         def build_migration_bond(options)
           options['migration.bond'] ||= Bond.new(
-            repository: Pragma::Migration.repository,
+            repository: Pragma::Migration.config.repository,
             request: options['rack.request'],
-            user_version_proc: Pragma::Migration.user_version_proc,
+            user_version_proc: Pragma::Migration.config.user_version_proc
           )
         end
 

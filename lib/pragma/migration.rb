@@ -3,6 +3,7 @@
 require 'rack'
 require 'mustermann'
 
+require 'pragma/migration/configuration'
 require 'pragma/migration/base'
 require 'pragma/migration/repository'
 require 'pragma/migration/version'
@@ -15,23 +16,19 @@ require 'pragma/migration/gem_version'
 module Pragma
   # Provides API payload migrations to support clients on older versions of your API.
   module Migration
-    # The default +user_version_proc+.
-    DEFAULT_USER_VERSION_PROC = lambda do |request|
-      request.get_header('X-Api-Version')
-    end
-
     class << self
-      # @!attribute [rw] repository
-      #   @return [Pragma::Migration::Repository] your migrations repository
+      # Returns the current configuration.
       #
-      # @!attribute [rw] user_version_proc
-      #   @return [Object] a callable taking a +Rack::Request+ as argument and returning an API
-      #     version identifier
-      attr_accessor :repository
-      attr_writer :user_version_proc
+      # @return [Configuration]
+      def config
+        @config ||= Configuration.new
+      end
 
-      def user_version_proc
-        @user_version_proc ||= DEFAULT_USER_VERSION_PROC
+      # Yields the current configuration for editing.
+      #
+      # @yield [Configuration]
+      def configure
+        yield config
       end
     end
   end
